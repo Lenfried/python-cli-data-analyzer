@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 def collect_and_analyze():
     numbers = []
     # Ask the user how many numbers to enter
@@ -47,6 +50,14 @@ def collect_and_analyze():
     for key, value in stats.items():
         print(f"  {key}: {value}")
 
+    # Save the analysis report to a file named report.txt
+    with open("report.txt", "a") as f:
+        f.write(f"Report generated on {datetime.now()}\n")
+        f.write(f"Numbers entered: {numbers}\n")
+        f.write("Analysis Results:\n")
+        for key, value in stats.items():
+            f.write(f"  {key}: {value}\n")
+        f.write("\n")
 
 def main():
     while True:
