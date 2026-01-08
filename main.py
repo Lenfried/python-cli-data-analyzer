@@ -25,5 +25,27 @@ def main():
     # Print the list
     print("Numbers entered:", numbers)
 
+    # Define analyze_numbers(numbers)
+    # Return count, min, max, sum, average in a dictionary
+    def analyze_numbers(numbers):
+        count = len(numbers)
+        min_val = min(numbers)
+        max_val = max(numbers)
+        total = sum(numbers)
+        average = total / count if count > 0 else 0
+        return {
+            "count": count,
+            "min": min_val,
+            "max": max_val,
+            "sum": total,
+            "average": average
+        }
+
+    # Call analyze_numbers and print the results
+    stats = analyze_numbers(numbers)
+    print("Analysis Results:")
+    for key, value in stats.items():
+        print(f"  {key}: {value}")
+
 if __name__ == "__main__":
     main()
