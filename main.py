@@ -1,4 +1,4 @@
-def main():
+def collect_and_analyze():
     numbers = []
     # Ask the user how many numbers to enter
     while True:
@@ -47,5 +47,21 @@ def main():
     for key, value in stats.items():
         print(f"  {key}: {value}")
 
+
+def main():
+    while True:
+        print("\nMenu:")
+        print("1) Enter numbers and analyze")
+        print("2) Exit the program")
+        choice = input("Enter your choice (1 or 2): ")
+
+        if choice == "1":
+            collect_and_analyze()
+        elif choice == "2":
+            print("Exiting the program.")
+            break
+        else:
+            print("Invalid choice. Please enter 1 or 2.")
+            
 if __name__ == "__main__":
     main()
