@@ -1,7 +1,9 @@
 from datetime import datetime
+import numbers
+from storage import save_numbers, load_numbers, save_report
+from analyzer import analyze_numbers, print_analysis
 
-
-def collect_and_analyze():
+def collect_numbers():
     numbers = []
     # Ask the user how many numbers to enter
     while True:
@@ -28,51 +30,54 @@ def collect_and_analyze():
     # Print the list
     print("Numbers entered:", numbers)
 
-    # Define analyze_numbers(numbers)
-    # Return count, min, max, sum, average in a dictionary
-    def analyze_numbers(numbers):
-        count = len(numbers)
-        min_val = min(numbers)
-        max_val = max(numbers)
-        total = sum(numbers)
-        average = total / count if count > 0 else 0
-        return {
-            "count": count,
-            "min": min_val,
-            "max": max_val,
-            "sum": total,
-            "average": average
-        }
-
-    # Call analyze_numbers and print the results
-    stats = analyze_numbers(numbers)
-    print("Analysis Results:")
-    for key, value in stats.items():
-        print(f"  {key}: {value}")
-
-    # Save the analysis report to a file named report.txt
-    with open("report.txt", "a") as f:
-        f.write(f"Report generated on {datetime.now()}\n")
-        f.write(f"Numbers entered: {numbers}\n")
-        f.write("Analysis Results:\n")
-        for key, value in stats.items():
-            f.write(f"  {key}: {value}\n")
-        f.write("\n")
+    return numbers
 
 def main():
+    stats = None
     while True:
         print("\nMenu:")
-        print("1) Enter numbers and analyze")
-        print("2) Exit the program")
-        choice = input("Enter your choice (1 or 2): ")
+        print("1) Enter numbers")
+        print("2) Save numbers to JSON file")
+        print("3) Load numbers from JSON file")
+        print("4) Analyze current numbers")
+        print("5) Save analysis report to file")
+        print("6) Exit the program")
+        choice = input("Enter your choice (1, 2, 3, 4, 5, or 6): ")
 
         if choice == "1":
-            collect_and_analyze()
+            numbers = collect_numbers()
         elif choice == "2":
+            try:
+                save_numbers(numbers)
+            except Exception as e:
+                print(f"An error occurred while saving: {e}")
+            else:
+                print("Numbers saved to data.json")
+        elif choice == "3":
+            try:
+                numbers = load_numbers()
+                print("Numbers loaded from data.json:", numbers)
+            except Exception as e:
+                print(f"An error occurred while loading: {e}")
+        elif choice == "4":
+            try:
+                stats = analyze_numbers(numbers)
+                print_analysis(numbers, stats)
+            except Exception as e:
+                print(f"An error occurred during analysis: {e}")
+        elif choice == "5":
+            if not numbers or stats is None:
+                print("No numbers or analysis results to save. Please enter and analyze numbers first.")
+                continue
+            try:
+                save_report(numbers, stats)
+            except Exception as e:
+                print(f"An error occurred while saving the report: {e}")
+        elif choice == "6":
             print("Exiting the program.")
             break
         else:
-            print("Invalid choice. Please enter 1 or 2.")
+            print("Invalid choice. Please enter 1, 2, 3, 4, 5, or 6.")
             
 if __name__ == "__main__":
     main()
