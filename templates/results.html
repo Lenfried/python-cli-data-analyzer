@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Analysis Results</h1>
+        
+        <div class="results-section">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Count</strong></td>
+                        <td>{{ results.count }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sum</strong></td>
+                        <td>{{ results.sum }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Average</strong></td>
+                        <td>{{ "%.2f"|format(results.average) }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Min</strong></td>
+                        <td>{{ results.min }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Max</strong></td>
+                        <td>{{ results.max }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="button-group">
+            <a href="/" class="btn btn-primary">Analyze Another</a>
+        </div>
+    </div>
+</body>
+</html>
