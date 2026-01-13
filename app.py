@@ -27,7 +27,9 @@ def test_weather():
     latitude = 40.7128
     longitude = -74.0060
     times, temperatures = fetch_hourly_temperature(latitude, longitude)
-    return jsonify(times, temperatures)
+    weather_data = list(zip(times, temperatures))
+    return render_template('weather_analysis_results.html', weather_data=weather_data)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
