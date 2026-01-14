@@ -38,8 +38,7 @@ def analyze_weather():
     times, temperatures = fetch_hourly_temperature(latitude, longitude)
     
     results = analyze_time_series(times, temperatures)
-    return jsonify(results)
-    #return render_template('weather_analysis_results.html', results=results, latitude=latitude, longitude=longitude)
+    return render_template('weather_analysis_results.html', results=results, latitude=latitude, longitude=longitude)
 
 if __name__ == '__main__':
     app.run(debug=True)

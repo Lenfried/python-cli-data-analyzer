@@ -59,6 +59,52 @@
         {% if error %}
             <div class="error">{{ error }}</div>
         {% else %}
+            <!-- Statistical Analysis Summary -->
+            {% if results %}
+            <h2 style="color: #333; margin-top: 30px;">Statistical Analysis</h2>
+            <div class="weather-info">
+                <div class="info-card">
+                    <div class="label">Minimum Temperature</div>
+                    <div class="value">{{ "%.2f"|format(results.min) }}°C</div>
+                    {% if results.time_min %}
+                    <div style="font-size: 0.9em; color: #777; margin-top: 5px;">at {{ results.time_min }}</div>
+                    {% endif %}
+                </div>
+                <div class="info-card">
+                    <div class="label">Maximum Temperature</div>
+                    <div class="value">{{ "%.2f"|format(results.max) }}°C</div>
+                    {% if results.time_max %}
+                    <div style="font-size: 0.9em; color: #777; margin-top: 5px;">at {{ results.time_max }}</div>
+                    {% endif %}
+                </div>
+                <div class="info-card">
+                    <div class="label">Mean (Average) Temperature</div>
+                    <div class="value">{{ "%.2f"|format(results.average) }}°C</div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Median Temperature</div>
+                    <div class="value">{{ "%.2f"|format(results.median) }}°C</div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Standard Deviation</div>
+                    <div class="value">
+                        {% if results.standard_deviation %}
+                        {{ "%.2f"|format(results.standard_deviation) }}°C
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Total Data Points</div>
+                    <div class="value">{{ results.count }}</div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Temperature Data Table -->
+            {% if weather_data %}
+            <h2 style="color: #333; margin-top: 30px;">Hourly Temperature Data</h2>
             <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                 <thead>
                     <tr style="background-color: #0066cc; color: white;">
@@ -75,6 +121,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
         {% endif %}
     </div>
 </body>
