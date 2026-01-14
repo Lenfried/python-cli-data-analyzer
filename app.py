@@ -2,6 +2,7 @@ from os import times
 from flask import Flask, jsonify, render_template, request
 from analyzer import analyze_numbers
 from external_api import fetch_hourly_temperature
+from weather_analysis import analyze_time_series
 
 app = Flask(__name__) # initialize Flask app
 
@@ -30,6 +31,15 @@ def test_weather():
     weather_data = list(zip(times, temperatures))
     return render_template('weather_analysis_results.html', weather_data=weather_data)
 
+@app.route("/analyze-weather")
+def analyze_weather():
+    latitude = request.args.get('lat', type=float, default=40.7128)
+    longitude = request.args.get('lon', type=float, default=-74.0060)
+    times, temperatures = fetch_hourly_temperature(latitude, longitude)
+    
+    results = analyze_time_series(times, temperatures)
+    return jsonify(results)
+    #return render_template('weather_analysis_results.html', results=results, latitude=latitude, longitude=longitude)
 
 if __name__ == '__main__':
     app.run(debug=True)
