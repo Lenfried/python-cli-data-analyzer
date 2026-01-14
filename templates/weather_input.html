@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Weather Input</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+    <body>
+        <main class="container">
+            <h1>Weather Input</h1>
+            <form method="POST" action="/analyze-weather">
+                <label>
+                    Latitude:
+                    <input type="text" name="lat" placeholder="e.g. 40.7128" required>
+                </label>
+                <label>
+                    Longitude:
+                    <input type="text" name="lon" placeholder="e.g. -74.0060" required>
+                </label>
+                <button type="submit">Analyze Weather</button>
+            </form>
+            {% if error %}
+            <div class="message error">{{ error }}</div>
+            {% endif %}
+        </main>
+    </body>
+</html>

@@ -27,18 +27,39 @@ def analyze():
 def test_weather():
     latitude = 40.7128
     longitude = -74.0060
-    times, temperatures = fetch_hourly_temperature(latitude, longitude)
-    weather_data = list(zip(times, temperatures))
-    return render_template('weather_analysis_results.html', weather_data=weather_data)
+    try:
+        times, temperatures = fetch_hourly_temperature(latitude, longitude)
+        weather_data = list(zip(times, temperatures))
+        return render_template('weather_analysis_results.html', weather_data=weather_data)
+    except Exception as e:
+        error_msg = f"Error fetching weather data: {str(e)}"
+        return render_template('weather_analysis_results.html', error=error_msg)
 
-@app.route("/analyze-weather")
+@app.route('/weather-input')
+def weather_input():
+    return render_template('weather_input.html')
+
+@app.route("/analyze-weather", methods=['POST'])
 def analyze_weather():
-    latitude = request.args.get('lat', type=float, default=40.7128)
-    longitude = request.args.get('lon', type=float, default=-74.0060)
-    times, temperatures = fetch_hourly_temperature(latitude, longitude)
-    
-    results = analyze_time_series(times, temperatures)
-    return render_template('weather_analysis_results.html', results=results, latitude=latitude, longitude=longitude)
+    try:
+        latitude = request.form.get("lat", type=float)
+        longitude = request.form.get("lon", type=float)
+        
+        if latitude is None or longitude is None:
+            return render_template('weather_input.html', error="Please provide valid latitude and longitude values.")
+        
+        times, temperatures = fetch_hourly_temperature(latitude, longitude)
+        results = analyze_time_series(times, temperatures)
+        weather_data = list(zip(times, temperatures))
+        
+        return render_template('weather_analysis_results.html', results=results, weather_data=weather_data, latitude=latitude, longitude=longitude)
+    except ValueError as e:
+        error_msg = f"Invalid data: {str(e)}"
+        return render_template('weather_input.html', error=error_msg)
+    except Exception as e:
+        error_msg = f"Error fetching weather data: {str(e)}"
+        return render_template('weather_input.html', error=error_msg)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

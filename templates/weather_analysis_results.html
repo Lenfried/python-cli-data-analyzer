@@ -1,128 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Analysis Results</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .weather-info {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin: 20px 0;
-        }
-        .info-card {
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-left: 4px solid #0066cc;
-            border-radius: 4px;
-        }
-        .label {
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 5px;
-        }
-        .value {
-            color: #333;
-            font-size: 1.1em;
-        }
-        .error {
-            color: #d32f2f;
-            padding: 15px;
-            background-color: #ffebee;
-            border-radius: 4px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Hourly Temperature Analysis</h1>
-        
-        {% if error %}
-            <div class="error">{{ error }}</div>
-        {% else %}
-            <!-- Statistical Analysis Summary -->
-            {% if results %}
-            <h2 style="color: #333; margin-top: 30px;">Statistical Analysis</h2>
-            <div class="weather-info">
-                <div class="info-card">
-                    <div class="label">Minimum Temperature</div>
-                    <div class="value">{{ "%.2f"|format(results.min) }}°C</div>
-                    {% if results.time_min %}
-                    <div style="font-size: 0.9em; color: #777; margin-top: 5px;">at {{ results.time_min }}</div>
-                    {% endif %}
-                </div>
-                <div class="info-card">
-                    <div class="label">Maximum Temperature</div>
-                    <div class="value">{{ "%.2f"|format(results.max) }}°C</div>
-                    {% if results.time_max %}
-                    <div style="font-size: 0.9em; color: #777; margin-top: 5px;">at {{ results.time_max }}</div>
-                    {% endif %}
-                </div>
-                <div class="info-card">
-                    <div class="label">Mean (Average) Temperature</div>
-                    <div class="value">{{ "%.2f"|format(results.average) }}°C</div>
-                </div>
-                <div class="info-card">
-                    <div class="label">Median Temperature</div>
-                    <div class="value">{{ "%.2f"|format(results.median) }}°C</div>
-                </div>
-                <div class="info-card">
-                    <div class="label">Standard Deviation</div>
-                    <div class="value">
-                        {% if results.standard_deviation %}
-                        {{ "%.2f"|format(results.standard_deviation) }}°C
-                        {% else %}
-                        N/A
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Weather Analysis Results</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+            h2 {
+                margin-top: 30px;
+                margin-bottom: 20px;
+            }
+
+            .weather-info {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                margin: 20px 0;
+            }
+
+            .info-card {
+                background-color: #f9f9f9;
+                padding: 15px;
+                border-left: 4px solid #667eea;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+            }
+
+            .info-card:hover {
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+                transform: translateY(-2px);
+            }
+
+            .label {
+                font-weight: 600;
+                color: #555;
+                margin-bottom: 8px;
+                font-size: 0.9em;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .value {
+                color: #333;
+                font-size: 1.3em;
+                font-weight: 600;
+            }
+
+            .time-info {
+                font-size: 0.9em;
+                color: #777;
+                margin-top: 8px;
+                font-style: italic;
+            }
+
+            .weather-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .weather-table thead {
+                background-color: #667eea;
+                color: white;
+            }
+
+            .weather-table th {
+                padding: 12px 15px;
+                text-align: left;
+                font-weight: 600;
+                font-size: 0.95em;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .weather-table td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #e0e0e0;
+                color: #555;
+            }
+
+            .weather-table tbody tr {
+                transition: background-color 0.2s ease;
+            }
+
+            .weather-table tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+            .weather-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            @media (max-width: 600px) {
+                .weather-info {
+                    grid-template-columns: 1fr;
+                }
+
+                .weather-table {
+                    font-size: 0.9em;
+                }
+
+                .weather-table th,
+                .weather-table td {
+                    padding: 10px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Hourly Temperature Analysis</h1>
+
+            {% if error %}
+                <div class="message error">{{ error }}</div>
+            {% else %}
+                <!-- Statistical Analysis Summary -->
+                {% if results %}
+                <h2>Statistical Analysis</h2>
+                <div class="weather-info">
+                    <div class="info-card">
+                        <div class="label">Minimum Temperature</div>
+                        <div class="value">{{ "%.2f"|format(results.min) }}°C</div>
+                        {% if results.time_min %}
+                        <div class="time-info">at {{ results.time_min }}</div>
                         {% endif %}
                     </div>
+                    <div class="info-card">
+                        <div class="label">Maximum Temperature</div>
+                        <div class="value">{{ "%.2f"|format(results.max) }}°C</div>
+                        {% if results.time_max %}
+                        <div class="time-info">at {{ results.time_max }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="info-card">
+                        <div class="label">Mean (Average) Temperature</div>
+                        <div class="value">{{ "%.2f"|format(results.average) }}°C</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="label">Median Temperature</div>
+                        <div class="value">{{ "%.2f"|format(results.median) }}°C</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="label">Standard Deviation</div>
+                        <div class="value">
+                            {% if results.standard_deviation %}
+                            {{ "%.2f"|format(results.standard_deviation) }}°C
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="label">Total Data Points</div>
+                        <div class="value">{{ results.count }}</div>
+                    </div>
                 </div>
-                <div class="info-card">
-                    <div class="label">Total Data Points</div>
-                    <div class="value">{{ results.count }}</div>
-                </div>
-            </div>
+                {% endif %}
+
+                <!-- Temperature Data Table -->
+                {% if weather_data %}
+                <h2>Hourly Temperature Data</h2>
+                <table class="weather-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Temperature (°C)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for time, temperature in weather_data %}
+                        <tr>
+                            <td>{{ time }}</td>
+                            <td>{{ temperature }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
             {% endif %}
-            
-            <!-- Temperature Data Table -->
-            {% if weather_data %}
-            <h2 style="color: #333; margin-top: 30px;">Hourly Temperature Data</h2>
-            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                <thead>
-                    <tr style="background-color: #0066cc; color: white;">
-                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Time</th>
-                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Temperature (°C)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for time, temperature in weather_data %}
-                    <tr style="border: 1px solid #ddd;">
-                        <td style="padding: 10px; border: 1px solid #ddd;">{{ time }}</td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">{{ temperature }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
-        {% endif %}
-    </div>
-</body>
+        </div>
+    </body>
 </html>
